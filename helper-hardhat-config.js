@@ -10,10 +10,6 @@ const constants = {
 const scriptsConfig = {}
 
 const contractsConfig = {
-	BadgeRenderer: {
-		name: "BadgeRenderer",
-		args: [],
-	},
 	TurtleShellToken: {
 		name: "TurtleShellToken",
 		args: {
@@ -38,7 +34,7 @@ const networkConfig = {
 		contracts: contractsConfig,
 		forTests: [
 			{ name: "DemoContract", args: [] },
-			{ name: "NonTransferableToken", args: ["TestToken", "TT"] },
+			{ name: "CustomERC4671", args: ["TestToken", "TT"] },
 		],
 	},
 }

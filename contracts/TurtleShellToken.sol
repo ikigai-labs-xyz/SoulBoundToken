@@ -2,31 +2,19 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./NonTransferableToken.sol";
+import "./CustomERC4671.sol";
 
-import "@openzeppelin/contracts/utils/Counters.sol";
-
-contract TurtleShellToken is NonTransferableToken, Ownable {
-	using Counters for Counters.Counter;
-
-	Counters.Counter private s_tokenIdCounter;
-	mapping(uint256 => bytes) s_tokenURIs;
-
-	constructor(string memory name, string memory symbol) NonTransferableToken(name, symbol) {}
+/**
+ * @title TurtleShellToken
+ * @author Philipp Keinberger
+ * @notice Non-Transferable-Token that allows for minting automated Audit badges
+ * @dev This contract is an implementation of the `CustomERC4671` token. It allows the
+ * owner to mint soul bound tokens with a custom URI.
+ */
+contract TurtleShellToken is CustomERC4671, Ownable {
+	constructor(string memory name, string memory symbol) CustomERC4671(name, symbol) {}
 
 	function mint(address to, string memory _tokenURI) external onlyOwner {
-		uint256 tokenId = s_tokenIdCounter.current();
-		s_tokenIdCounter.increment();
-
-		s_tokenURIs[tokenId] = bytes(_tokenURI);
-		_mint(to, tokenId);
-	}
-
-	/// @dev FUNCTION OVERRIDES
-
-	function tokenURI(uint256 tokenId) external view returns (string memory) {
-		_requireMinted(tokenId);
-
-		return string(s_tokenURIs[tokenId]);
+		_mint(to, _tokenURI);
 	}
 }
