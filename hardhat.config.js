@@ -11,11 +11,11 @@ require("@primitivefi/hardhat-dodoc")
 const GOERLI_RPC_URL =
 	process.env.RPC_URL !== undefined ? process.env.RPC_URL.replace("network", "goerli") : ""
 const GOERLI_RPIVATE_KEY = process.env.GOERLI_PRIVATE_KEY !== undefined ? process.env.GOERLI_PRIVATE_KEY : ""
-const MAINNET_RPC_URL =
-	process.env.RPC_URL !== undefined ? process.env.RPC_URL.replace("network", "mainnet") : ""
-const MAINNET_PRIVATE_KEY =
-	process.env.MAINNET_PRIVATE_KEY !== undefined ? process.env.MAINNET_PRIVATE_KEY : ""
-const EXPLORER_API_KEY = process.env.EXPLORER_API_KEY
+const MUMBAI_RPC_URL =
+	process.env.RPC_URL !== undefined ? process.env.RPC_URL.replace("network", "polygon-mumbai") : ""
+const MUMBAI_PRIVATE_KEY = process.env.MUMBAI_PRIVATE_KEY !== undefined ? process.env.MUMBAI_PRIVATE_KEY : ""
+const GOERLI_EXPLORER_API_KEY = process.env.GOERLI_EXPLORER_API_KEY
+const MUMBAI_EXPLORER_API_KEY = process.env.MUMBAI_EXPLORER_API_KEY
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
 const REPORT_GAS = process.env.REPORT_GAS
 
@@ -47,11 +47,11 @@ module.exports = {
 			url: GOERLI_RPC_URL,
 			accounts: [GOERLI_RPIVATE_KEY],
 		},
-		mainnet: {
-			chainId: 1,
+		mumbai: {
+			chainId: 80001,
 			blockConfirmations: 6,
-			url: MAINNET_RPC_URL,
-			accounts: [MAINNET_PRIVATE_KEY],
+			url: MUMBAI_RPC_URL,
+			accounts: [MUMBAI_PRIVATE_KEY],
 		},
 	},
 	namedAccounts: {
@@ -72,7 +72,10 @@ module.exports = {
 		excludeContracts: [],
 	},
 	etherscan: {
-		apiKey: EXPLORER_API_KEY,
+		apiKey: {
+			goerli: GOERLI_EXPLORER_API_KEY,
+			polygonMumbai: MUMBAI_EXPLORER_API_KEY,
+		},
 	},
 	dodoc: {
 		runOnCompile: false,

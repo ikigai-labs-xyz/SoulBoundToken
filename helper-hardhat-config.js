@@ -20,14 +20,14 @@ const contractsConfig = {
 }
 
 const networkConfig = {
-	1: {
-		name: "mainnet",
-		contracts: contractsConfig,
-	},
 	5: {
 		name: "goerli",
 		contracts: contractsConfig,
 		forTests: [],
+	},
+	80001: {
+		name: "mumbai",
+		contracts: contractsConfig,
 	},
 	31337: {
 		name: "hardhat",

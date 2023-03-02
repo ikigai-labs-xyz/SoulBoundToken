@@ -9,7 +9,7 @@ const contractName = contractConfig.name
 !constants.developmentChains.includes(network.name)
 	? describe.skip
 	: describe(contractName, () => {
-			let contract, userContract, demoContract, deployer
+			let contract, user, userContract, demoContract, deployer, domain
 
 			beforeEach(async () => {
 				deployer = await ethers.getSigner((await getNamedAccounts()).deployer)
@@ -18,33 +18,73 @@ const contractName = contractConfig.name
 				contract = await ethers.getContract(contractName, deployer.address)
 				userContract = await ethers.getContract(contractName, user.address)
 				demoContract = await ethers.getContract("DemoContract", deployer.address)
+
+				domain = {
+					name: contractConfig.args.name,
+					version: "1",
+					chainId: chainId,
+					verifyingContract: contract.address,
+				}
 			})
 
 			describe("mint", () => {
-				let demoIpfsHash
-				beforeEach(() => {
+				let mintRequest, mintRequestTypes, faultyMintSignature, demoIpfsHash
+				beforeEach(async () => {
+					mintRequestTypes = {
+						MintRequest: [
+							{ name: "to", type: "address" },
+							{ name: "tokenURI", type: "string" },
+						],
+					}
+
 					demoIpfsHash = "ipfs://someDemoHash"
+
+					mintRequest = {
+						to: demoContract.address,
+						tokenURI: demoIpfsHash,
+					}
+
+					mintSignature = await deployer._signTypedData(domain, mintRequestTypes, mintRequest)
+					faultyMintSignature = await user._signTypedData(domain, mintRequestTypes, mintRequest)
 				})
-				it("can only be called by the owner", async () => {
-					await expect(userContract.mint(demoContract.address, 0)).to.be.revertedWith("Ownable:")
+				it("can only be called with valid signature", async () => {
+					await expect(userContract.mint(mintRequest, faultyMintSignature)).to.be.revertedWith(
+						"TurtleShellToken__InvalidSignature()"
+					)
+				})
+				it("reverts if signature has already been used", async () => {
+					await userContract.mint(mintRequest, mintSignature)
+					await expect(userContract.mint(mintRequest, mintSignature)).to.be.revertedWith(
+						`TurtleShellToken__SignatureAlreadyUsed()`
+					)
+				})
+				it("mints to the contract address", async () => {
+					await userContract.mint(mintRequest, mintSignature)
+
+					const owner = await userContract.ownerOf(0)
+					expect(owner).to.equal(demoContract.address)
 				})
 				it("stores token URI at correct token Id", async () => {
 					const secondDemoIpfsHash = "ifps://secondDemoHash"
 
-					await contract.mint(demoContract.address, demoIpfsHash)
-					await contract.mint(demoContract.address, secondDemoIpfsHash)
+					const secondMintRequest = {
+						to: demoContract.address,
+						tokenURI: secondDemoIpfsHash,
+					}
+					const secondMintSignature = deployer._signTypedData(
+						domain,
+						mintRequestTypes,
+						secondMintRequest
+					)
 
-					const firstUri = await contract.tokenURI(0)
+					await userContract.mint(mintRequest, mintSignature)
+					await userContract.mint(secondMintRequest, secondMintSignature)
+
+					const firstUri = await userContract.tokenURI(0)
 					expect(firstUri).to.equal(demoIpfsHash)
 
-					const secondUri = await contract.tokenURI(1)
+					const secondUri = await userContract.tokenURI(1)
 					expect(secondUri).to.equal(secondDemoIpfsHash)
-				})
-				it("mints to the contract address", async () => {
-					await contract.mint(demoContract.address, demoIpfsHash)
-
-					const owner = await contract.ownerOf(0)
-					expect(owner).to.equal(demoContract.address)
 				})
 			})
 	  })
