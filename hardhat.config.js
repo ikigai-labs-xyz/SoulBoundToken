@@ -14,6 +14,9 @@ const GOERLI_RPIVATE_KEY = process.env.GOERLI_PRIVATE_KEY !== undefined ? proces
 const MUMBAI_RPC_URL =
 	process.env.RPC_URL !== undefined ? process.env.RPC_URL.replace("network", "polygon-mumbai") : ""
 const MUMBAI_PRIVATE_KEY = process.env.MUMBAI_PRIVATE_KEY !== undefined ? process.env.MUMBAI_PRIVATE_KEY : ""
+const AURORA_RPC_URL =
+	process.env.RPC_URL !== undefined ? process.env.RPC_URL.replace("network", "aurora-testnet") : ""
+const AURORA_PRIVATE_KEY = process.env.AURORA_PRIVATE_KEY !== undefined ? process.env.AURORA_PRIVATE_KEY : ""
 const GOERLI_EXPLORER_API_KEY = process.env.GOERLI_EXPLORER_API_KEY
 const MUMBAI_EXPLORER_API_KEY = process.env.MUMBAI_EXPLORER_API_KEY
 const COINMARKETCAP_API_KEY = process.env.COINMARKETCAP_API_KEY
@@ -53,6 +56,12 @@ module.exports = {
 			url: MUMBAI_RPC_URL,
 			accounts: [MUMBAI_PRIVATE_KEY],
 		},
+		aurora: {
+			chainId: 1313161555,
+			blockConfirmations: 6,
+			url: AURORA_RPC_URL,
+			accounts: [AURORA_PRIVATE_KEY],
+		},
 	},
 	namedAccounts: {
 		deployer: {
@@ -75,7 +84,18 @@ module.exports = {
 		apiKey: {
 			goerli: GOERLI_EXPLORER_API_KEY,
 			polygonMumbai: MUMBAI_EXPLORER_API_KEY,
+			// aurora: "",
 		},
+		// customChains: [
+		// 	{
+		// 		network: "aurora",
+		// 		chainId: 1313161555,
+		// 		urls: {
+		// 			apiURL: "https://explorer.testnet.aurora.dev/api",
+		// 			browserURL: "https://explorer.testnet.aurora.dev",
+		// 		},
+		// 	},
+		// ],
 	},
 	dodoc: {
 		runOnCompile: false,

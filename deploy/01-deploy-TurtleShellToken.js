@@ -21,7 +21,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 	})
 	log(`${contractConfig.name} (${deployedContract.address}) deployed at (${network.name})`)
 
-	if (!isDevelopmentChain && process.env.EXPLORER_API_KEY) {
+	if (!isDevelopmentChain && !constants.disabledVerificationNetworks.includes(network.name)) {
 		await verify(deployedContract.address, constructorArguments, network.name)
 	}
 
